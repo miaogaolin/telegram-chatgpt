@@ -69,13 +69,14 @@ export default {
       const body = {
         messages: allMessages,
         max_tokens: 400,
-        temperature: res.Temperature || 0.5,
+        temperature: res.Temperature !== null ? res.Temperature : 0.5,
         model: "gpt-3.5-turbo",
         user: userDataKey,
         top_p: 1,
         frequency_penalty: 1,
         presence_penalty: 1,
       };
+      const startTime = Date.now(); // 记录当前时间戳
       const response = await fetch("https://api.openai.com/v1/chat/completions", {
         method: "POST",
         headers: {
@@ -84,10 +85,15 @@ export default {
         },
         body: JSON.stringify(body)
       });
+      // 这里是要记录执行时间的代码段
+      const elapsed = Date.now() - startTime; // 计算时间差
+      console.log(`Execution time for openai`, `${elapsed}ms`); // 输出执行时间
+
       const responseBody = await response.json();
 
-      console.log("send all message to openai", JSON.stringify(allMessages));
       if (responseBody.choices) {
+        console.log("send all message to openai", JSON.stringify(allMessages));
+
         const answer = responseBody.choices[0].message.content;
 
         if (res.IsHistory) {
@@ -102,7 +108,10 @@ export default {
         await env.UserData.put(userDataKey, JSON.stringify(data));
         await SendChat(chatId, answer, env.TELEGRAM_API_KEY);
       } else {
-        console.log(body);
+        if (responseBody.error.message) {
+          await SendChat(chatId, `Error: ${responseBody.error.message}`, env.TELEGRAM_API_KEY);
+        }
+        console.log('openai request', body, 'openai response', responseBody);
       }
 
       return new Response("OK", { status: 200 });
