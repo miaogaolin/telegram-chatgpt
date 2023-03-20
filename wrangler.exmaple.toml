@@ -1,0 +1,17 @@
+name = "telegram-chatgpt"
+main = "src/index.ts"
+compatibility_date = "2023-03-09"
+usage_model = "bundled"
+env = { }
+kv_namespaces = [
+  { binding = "UserData", id = "95a3d5bfe5d747b0a91ef0150b810de3" }
+]
+
+[triggers]
+crons = [ ]
+
+[vars]
+SECRET_TOKEN = "openai密钥"
+TELEGRAM_API_KEY = "telegram机器人api key"
+COMMAND_CONCAT = "有任何问题随时找我 @evanmiao"
+COMMAND_START = "基于 GPT 的聊天工具，有任何问题随时找我 @evanmiao"
